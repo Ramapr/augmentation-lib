@@ -1,2 +1,4 @@
 # aug
- augmentation code
+ Here stored code for augmentation project.
+ The code would be have hierarchical strukture.
+ 
