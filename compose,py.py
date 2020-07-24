@@ -11,27 +11,31 @@ imshow(photo)
 
 #%%
 
-def compose(img, list_of_aug, shuffle=True):
+def compose(img, aug_list, shuffle=True):
   # замешивает аугментации из list_of_aug
-  if shuffle:
-    args = np.random.permutation(np.arange(len(list_of_aug)))
-  else:
-    args = np.arange(0, len(list_of_aug))
-  out = np.zeros((len(list_of_aug), *img.shape), np.uint8)
-  for arg in args:
-    voc={'gamma':(gamma, img),
-         'rotate':(rotate, img),
-         'gauss_blur':(gauss_blur, img),
-         'motion_blur':(motion_blur, img)}
+  voc={'gamma':(gamma, img),
+       'rotate':(rotate, img),
+       'gauss_blur':(gauss_blur, img),
+       'motion_blur':(motion_blur, img), 
+       'mirror':(mirror, img),
+       'contrast':(contrast, img),
+       'brightness':(brightness, img)
+       }
+  if isinstance(aug_list, np.ndarray):
+    aug_list = np.array(aug_list)
 
-    funargs = voc[list_of_aug[arg]][1]
+  if shuffle:
+    aug_list = np.random.permutation(aug_list)
+
+  for aug in aug_list:
+    funargs = voc[aug][1]
     # voc_out[list_of_tr[args[arg]]] = funargs[2:]
-    img = voc[list_of_aug[arg]][0](funargs)
-    #out[arg, ...] = voc[list_of_aug[arg]][0](funargs)
+    img = voc[aug][0](funargs)
 
   return img #out #img
 
 #%%
+
   
 img = compose(photo, ['gamma', 'rotate', 
                       'gauss_blur'],
