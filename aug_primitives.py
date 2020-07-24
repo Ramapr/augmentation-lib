@@ -16,11 +16,11 @@ def rotate(img, rot='rand'):
   if rot=='rand':
     rot = prim_list[np.random.randint(0, len(prim_list))]
   if rot == '180':
-    return img[::-1,::-1]
+    return img[::-1,::-1], rot
   if rot == 'mirr':
-    return img[::-1,:]
+    return img[::-1,:], rot
   if rot == '180mirr':
-    return img[:,::-1]
+    return img[:,::-1], rot
    
 #imshow(rotate(photo))
 #%%
@@ -30,9 +30,9 @@ def mirror(img, p='rand'):
   if p == 'rand':
     p = np.random.randint(0, 2)
   if p == 0:
-    return img[::-1,:] 
+    return img[::-1,:], p 
   else:
-    return img[:,::-1]   
+    return img[:,::-1], p   
   
 #imshow(mirror(photo))  
 #%%
@@ -46,7 +46,7 @@ def gamma(img, gamma='rand'):
       gamma = np.random.uniform(1.2, 2)
   k_g = 1.0 / gamma
   table = (((np.arange(0, 256) / 255.0) ** k_g) * 255).astype("uint8")
-  return cv2.LUT(img, table)
+  return cv2.LUT(img, table), gamma
 
 #imshow(random_gamma(photo))
 #%%
@@ -61,7 +61,7 @@ def gauss_blur(img, kernel_size='rand'):
   #print(kernel_size)
   kernel_size = (kernel_size,kernel_size)
   out = cv2.GaussianBlur(img, kernel_size, 0)
-  return out
+  return out, kernel_size
 
 #%%
 
@@ -87,7 +87,7 @@ def motion_blur(img, degree='rand', angle='rand'):
   # convert to uint8
   cv2.normalize(blurred, blurred, 0, 255, cv2.NORM_MINMAX)
   blurred = np.array(blurred, dtype=np.uint8)
-  return blurred
+  return blurred, (degree, angle)
   
 
 #%%
@@ -109,17 +109,17 @@ def brightness(img, k='rand'):
   v[v > 255] = 255
   v[v < 0] = 0
   out = cv2.cvtColor(cv2.merge((h, s, v)), cv2.COLOR_HSV2RGB)
-  return out
+  return out, k
 
 #%%  
 
-#imshow(brightness(photo, k=-30))
+#a = brightness(photo, k=-30)
 
 #%%
 def contrast(img, kont='rand'):
   if kont == 'rand':
     kont = np.random.uniform(0.8, 1.2) # 0-1 decrease 1-2 - increase
-  return np.clip(np.round(img * kont), 0, 255).astype(np.uint8)
+  return np.clip(np.round(img * kont), 0, 255).astype(np.uint8), kont
 
 #%%  
 
