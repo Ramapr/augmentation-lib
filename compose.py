@@ -1,17 +1,12 @@
 import numpy as np
+import pandas as pd
 import cv2
 from skimage.io import imshow, imsave
 from aug_primitives import gamma, rotate, gauss_blur, motion_blur, brightness, contrast, mirror
 
 #%%
 
-photo = cv2.imread('cat.jpg')
-photo = cv2.cvtColor(photo, cv2.COLOR_BGR2RGB)
-imshow(photo)
-
-#%%
-
-def compose(img, aug_list, shuffle=True):
+def compose(img, aug_list, shuffle=True, log_param=True):
   # замешивает аугментации из list_of_aug
   voc={'gamma':(gamma, img),
        'rotate':(rotate, img),
@@ -23,16 +18,23 @@ def compose(img, aug_list, shuffle=True):
        }
   if isinstance(aug_list, np.ndarray):
     aug_list = np.array(aug_list)
+    
+  if log_param:
+    param = {}
 
   if shuffle:
     aug_list = np.random.permutation(aug_list)
-
+  
   for aug in aug_list:
     func_args = voc[aug][1]
     # voc_out[list_of_tr[args[arg]]] = funargs[2:]
-    img = voc[aug][0](func_args)
-
-  return img #out #img
+    img, param[aug] = voc[aug][0](func_args)
+  
+  if log_param:
+    return img, param
+  else: 
+    #print(param)
+    return img #out #img
 
 #%%
 
@@ -92,8 +94,32 @@ p_ =  [.2, .5, .3, .3, .5, .4, .6]
 #gen_rnd_sec(aug, [.2, .5, .3, .3, .5, .4, .6])
 
 #%%
+photo = cv2.imread('cat.jpg')
+photo = cv2.cvtColor(photo, cv2.COLOR_BGR2RGB)
+imshow(photo)
 
-img = compose(photo, gen_rnd_sec(aug, p_))
+
+img, p = compose(photo, gen_rnd_sec(aug, p_))
 imshow(img)
+
+#%%
+
+######
+##
+##   Example how to log parameters after parallel execution.
+##
+######
+
+# test parameter logging
+
+
+#param = []
+#for i in range(5):
+#  img, p = compose(photo, gen_rnd_sec(aug, p_))
+#  param.append(p)
+#  ###db.at[i] = p
+#
+#dat = pd.DataFrame(data=param, columns=aug)
+
 
 #%%
